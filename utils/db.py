@@ -8,7 +8,7 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
 
 @staticmethod
-def store_next_symbol(queue: Queue):
+def _store_next_symbol(queue: Queue):
     while True:
         try:
             val = queue.get(timeout=20)
@@ -16,6 +16,7 @@ def store_next_symbol(queue: Queue):
             logging.warning('Queue timeout reached, stopping')
             break
         if val == 'DONE':
+            logging.info('db worker recieved "DONE"')
             break
         symbol, price, datetime = val
         _insert(symbol, price, datetime)
@@ -37,6 +38,9 @@ def _insert(symbol: str, price: float, datetime: float):
         conn.execute(text(sql), {'date': datetime, 'symbol': symbol, 'price': price})
         conn.commit()
 
+@staticmethod
+def run(queue: Queue, output_queues: list[Queue]):
+    return _store_next_symbol(queue)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')

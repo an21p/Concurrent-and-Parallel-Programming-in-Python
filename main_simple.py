@@ -1,9 +1,9 @@
 import time
 
 from worker.Worker import Worker
-from utils.wiki import get_sp_500_companies
-from utils.yahoo import get_next_symbol
-from utils.db import store_next_symbol
+from utils.wiki import run as wiki_run
+from utils.yahoo import run as yahoo_run
+from utils.db import run as db_run
 from multiprocessing import Queue
 import logging
 
@@ -20,18 +20,17 @@ def main() -> None:
     db_workers = []
 
     for _ in range(yahoo_worker_count):
-        workers.append(Worker(get_next_symbol, (symbol_queue, [db_queue])))
+        workers.append(Worker(yahoo_run, (symbol_queue, [db_queue])))
 
     for _ in range(db_worker_count):
-        db_workers.append(Worker(store_next_symbol, (db_queue,)))
+        db_workers.append(Worker(db_run, (db_queue,)))
 
     count = 0
-    for symbol in get_sp_500_companies():
+    for symbol in wiki_run():
         symbol_queue.put(symbol)
         count+=1
         if count > 3:
             break
-
    
     for _ in workers:
         symbol_queue.put('DONE') 

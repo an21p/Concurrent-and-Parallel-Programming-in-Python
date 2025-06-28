@@ -9,34 +9,44 @@ from typing import List
 import yfinance as yf
 
 @staticmethod
-def get_next_symbol(queue: Queue, output: List[Queue]):
-    if not isinstance(output, list):
+def _get_next_symbol(queue: Queue, output: List[Queue] | None = None):
+    if output is not None and not isinstance(output, list):
         output = [output]
     
     while True:
         try:
-            val = queue.get(timeout=20)
+            val = queue.get(timeout=10)
         except Empty:
             logging.warning('Queue timeout reached, stopping')
             break
+
         if val == 'DONE':
-            for out in output:
-                out.put('DONE')
+            logging.info('yahoo worker recieved "DONE"')
             break
-        price = get_yahoo_data(val)
-        for out in output:
-            out.put((val, price, datetime.now(timezone.utc)))
+        price = _get_yahoo_data(val)
+        if output is not None:
+            for out in output:
+                out.put((val, price, datetime.now(timezone.utc)))
         logging.info(f"{val},{price}")
-        time.sleep(20 * random.random())
+        time.sleep(10 * random.random())
+
+    if output is not None:
+        for out in output:
+            for _ in range(20):
+                out.put('DONE')
 
 @staticmethod
-def get_yahoo_data(symbol: str):
+def _get_yahoo_data(symbol: str):
     ticker = yf.Ticker(symbol)
     # You can access either 'regularMarketPrice' or 'currentPrice'
     info = ticker.info
     return info.get('regularMarketPrice', info.get('currentPrice')) 
 
+@staticmethod
+def run(queue: Queue, output: List[Queue]):
+    return _get_next_symbol(queue, output)
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    logging.info(get_yahoo_data('AAPL'))
+    logging.info(_get_yahoo_data('AAPL'))
 

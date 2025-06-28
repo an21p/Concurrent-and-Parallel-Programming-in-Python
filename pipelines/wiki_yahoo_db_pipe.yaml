@@ -1,0 +1,31 @@
+queues:
+  - name: SymbolQueue
+    description: contains symbols scraped from wikipedia
+
+  - name: DbUploadQueue
+    description: contains data to be written in the database
+
+workers:
+  - name: WikiWorker
+    description: This scrapes raw Wikipedia and pulls out symbols
+    location: utils.wiki
+    input_values:
+      - "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+    output_queues:
+      - SymbolQueue
+
+  - name: YahooWorker
+    description: This pulls price data from yfinance
+    location: utils.yahoo
+    input_queue: SymbolQueue
+    instances: 5
+    output_queues:
+      - DbUploadQueue
+
+  - name: DbWorker
+    description: This loads data from yahoo to the database
+    location: utils.db
+    instances: 10
+    input_queue: DbUploadQueue
+
+  
