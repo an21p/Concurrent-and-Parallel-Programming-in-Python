@@ -29,7 +29,7 @@ def main() -> None:
     for symbol in get_sp_500_companies():
         symbol_queue.put(symbol)
         count+=1
-        if count > 5:
+        if count > 3:
             break
 
    
@@ -42,7 +42,8 @@ def main() -> None:
     for worker in db_workers:
         worker.join()
 
-    logging.info("Main time: ", time.time() - start_time)
+    logging.info(f"Main time: {time.time() - start_time}")
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     main()

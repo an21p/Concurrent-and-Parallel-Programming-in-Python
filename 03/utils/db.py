@@ -39,6 +39,7 @@ def _insert(symbol: str, price: float, datetime: float):
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     engine = _get_sqlite_connection()
     yahoo_obj = db.MetaData()
     price = db.Table(
