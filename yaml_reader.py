@@ -83,10 +83,10 @@ class YamlPipelineExecutor(threading.Thread):
                                 self._queues[output_queue].put('DONE')
                     to_del.append(worker_name)
                 worker_stats.append([worker_name, total_workers_alive])
-            print(worker_stats)
+            logging.info(worker_stats)
             if total_workers_alive == 0:
                 break
 
             for worker_name in to_del:
                 del self._workers[worker_name]
-            time.sleep(10)
+            time.sleep(5)

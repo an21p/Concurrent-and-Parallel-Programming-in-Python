@@ -1,9 +1,14 @@
 import logging
+import os
 
 from yaml_reader import YamlPipelineExecutor
 
 def main() -> None:
-    yamlExecutor = YamlPipelineExecutor('pipelines/wiki_yahoo_db_pipe.yaml')
+    pipeline_location = os.environ.get('PIPELINE_LOCATION')
+    if pipeline_location is None:
+        logging.error('pipeline location not defined "> source .env-local"')
+        exit(1)
+    yamlExecutor = YamlPipelineExecutor(pipeline_location)
     yamlExecutor.start()
     yamlExecutor.join()
 

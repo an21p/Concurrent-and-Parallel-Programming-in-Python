@@ -37,8 +37,8 @@ def run(urls: List[str], output_queues: list[Queue]):
         for out in output_queues:
             out.put(symbol)
         count += 1
-        if count > 10:
-            break
+        # if count > 10:
+        #     break
 
     # for out in output_queues:
     #     for _ in range(20):
