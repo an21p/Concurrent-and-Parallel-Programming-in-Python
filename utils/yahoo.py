@@ -6,7 +6,7 @@ from multiprocessing import Queue
 from queue import Empty
 from typing import List
 
-import yfinance as yf
+from yfinance import Ticker
 
 @staticmethod
 def _get_next_symbol(queue: Queue, output: List[Queue] | None = None):
@@ -30,14 +30,14 @@ def _get_next_symbol(queue: Queue, output: List[Queue] | None = None):
         logging.info(f"{val},{price}")
         time.sleep(10 * random.random())
 
-    if output is not None:
-        for out in output:
-            for _ in range(20):
-                out.put('DONE')
+    # if output is not None:
+    #     for out in output:
+    #         for _ in range(20):
+    #             out.put('DONE')
 
 @staticmethod
 def _get_yahoo_data(symbol: str):
-    ticker = yf.Ticker(symbol)
+    ticker = Ticker(symbol)
     # You can access either 'regularMarketPrice' or 'currentPrice'
     info = ticker.info
     return info.get('regularMarketPrice', info.get('currentPrice')) 
