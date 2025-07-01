@@ -46,12 +46,12 @@ Run the comparison script:
 python lesssons/threading/01_threading_vs_multiprocess/main.py
 ```
 
-### Pipeline Example
+### Pipeline Example (using threading)
 
 1. Initialize the database:
 
     ```sh
-    cd threading
+    cd pipeline_runner
     ./init_db.sh
     ```
 
@@ -64,18 +64,12 @@ python lesssons/threading/01_threading_vs_multiprocess/main.py
 3. Run the pipeline:
 
     ```sh
-    python threading/main.py
+    python pipeline_runner/main.py
     ```
-
-### Simple Pipeline
-
-```sh
-python threading/main_simple.py
-```
 
 ## Notes
 
-- The pipeline is configured via YAML files in `threading/pipelines/`.
+- The pipeline is configured via YAML files in `pipeline_runner/pipelines/`.
 - Worker logic is modular and can be extended via the `utils/` and `worker/` directories.
 
 ## License
